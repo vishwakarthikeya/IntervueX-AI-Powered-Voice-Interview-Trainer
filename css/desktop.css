@@ -1,0 +1,96 @@
+/* desktop.css - Desktop Enhancements */
+
+@media (min-width: 769px) {
+    /* Landing page */
+    .features-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    /* Setup page */
+    .difficulty-options {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    /* Interview page */
+    .interview-main {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 100px 2rem 2rem;
+    }
+    
+    .ai-speaking-container {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+    
+    .ai-avatar {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .ai-question {
+        font-size: 1.25rem;
+    }
+    
+    .control-bar {
+        gap: 1rem;
+        bottom: 40px;
+    }
+    
+    .mic-button-container {
+        bottom: 120px;
+    }
+    
+    .score-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    /* Dashboard page */
+    .dashboard-main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 100px 2rem 2rem;
+    }
+    
+    .score-cards {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+    }
+    
+    .charts-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+    
+    .analysis-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+    
+    .dashboard-actions {
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    /* Hover effects */
+    .feature-card:hover,
+    .difficulty-card:hover,
+    .score-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px var(--shadow-color);
+    }
+    
+    /* Parallax depth */
+    .landing-container {
+        perspective: 1000px;
+    }
+    
+    .hero-content {
+        transform: translateZ(20px);
+    }
+    
+    .features-grid {
+        transform: translateZ(10px);
+    }
+}

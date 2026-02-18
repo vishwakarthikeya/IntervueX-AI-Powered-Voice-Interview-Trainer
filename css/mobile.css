@@ -1,0 +1,230 @@
+/* Mobile-First Optimizations */
+
+@media (max-width: 768px) {
+    .app-container {
+        padding: 0.5rem;
+    }
+
+    /* Header */
+    .glass-header {
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .logo h1 {
+        font-size: 1.25rem;
+    }
+
+    .logo-icon {
+        font-size: 1.5rem;
+    }
+
+    /* Landing Page */
+    .hero-section {
+        padding: 2rem 1rem;
+    }
+
+    .hero-title {
+        font-size: 1.75rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .feature-item {
+        font-size: 0.875rem;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+    }
+
+    .btn-primary, .btn-secondary {
+        width: 100%;
+    }
+
+    /* How It Works */
+    .steps {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    /* Interview Page */
+    .setup-card {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .interview-card {
+        padding: 1.5rem;
+    }
+
+    .question-text {
+        font-size: 1.25rem;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    .typing-animation {
+        white-space: normal;
+        border-right: none;
+        animation: none;
+    }
+
+    /* Voice Controls */
+    .voice-controls {
+        flex-direction: column;
+    }
+
+    .mic-button {
+        padding: 1.25rem;
+        font-size: 1.125rem;
+    }
+
+    /* Make tap targets larger */
+    .btn-primary, 
+    .btn-secondary, 
+    .mic-button,
+    .nav-link,
+    .form-control {
+        min-height: 48px;
+    }
+
+    /* Sticky mic controls for better mobile UX */
+    .interview-footer {
+        position: sticky;
+        bottom: 0;
+        background: var(--bg-glass);
+        backdrop-filter: blur(10px);
+        padding: 1rem;
+        margin-top: 1rem;
+        border-top: 1px solid var(--border);
+        z-index: 100;
+    }
+
+    #nextQuestionBtn {
+        width: 100%;
+    }
+
+    /* Dashboard */
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-icon {
+        font-size: 1.5rem;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-container {
+        padding: 1rem;
+    }
+
+    /* History Items */
+    .history-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .history-score {
+        align-self: flex-end;
+    }
+
+    /* Evaluation Phase */
+    .evaluation-card {
+        padding: 1.5rem;
+    }
+
+    .score-value {
+        font-size: 2.5rem;
+    }
+
+    .feedback-card {
+        padding: 1rem;
+    }
+
+    .evaluation-actions {
+        flex-direction: column;
+    }
+
+    /* Header Navigation */
+    .header-nav {
+        gap: 0.5rem;
+    }
+
+    .nav-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .glass-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+
+    .header-nav {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Landscape orientation */
+@media (max-height: 600px) and (orientation: landscape) {
+    .hero-section {
+        padding: 1rem;
+    }
+
+    .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .interview-card {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .btn-primary:hover,
+    .btn-secondary:hover,
+    .mic-button:hover {
+        transform: none;
+    }
+
+    /* Remove hover effects on touch devices */
+    .nav-link:hover {
+        background: transparent;
+    }
+}

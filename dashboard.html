@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Dashboard - AI Voice Interview Trainer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Additional dashboard styles */
+        .dashboard-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .stat-card {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(20, 24, 28, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+        }
+        
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .chart-container {
+            padding: 1.5rem;
+            background: rgba(20, 24, 28, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+        }
+        
+        .chart-container h3 {
+            margin-bottom: 1rem;
+        }
+        
+        .chart-container canvas {
+            max-height: 300px;
+            max-width: 100%;
+        }
+        
+        /* Interview History Cards */
+        .history-section {
+            padding: 1.5rem;
+            background: rgba(20, 24, 28, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-header h3 {
+            font-size: 1.25rem;
+        }
+        
+        .btn-text {
+            background: transparent;
+            border: none;
+            color: var(--accent-primary);
+            cursor: pointer;
+        }
+        
+        .history-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .history-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid;
+        }
+        
+        .history-card:hover {
+            transform: translateX(5px);
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .history-card.custom {
+            border-left-color: #3b82f6;
+        }
+        
+        .history-card.practice {
+            border-left-color: #10b981;
+        }
+        
+        .history-card.resume {
+            border-left-color: #ef4444;
+        }
+        
+        .history-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .history-date {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .mode-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .history-card-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .history-info p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .history-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-primary);
+        }
+        
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+        
+        /* Interview Detail Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1a1e24;
+            border-radius: 1.5rem;
+            max-width: 800px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0 0.5rem;
+        }
+        
+        .detail-score {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .detail-score .score-value {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .score-breakdown {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-item .label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            display: block;
+        }
+        
+        .score-item .value {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        
+        .conversation-review {
+            margin: 2rem 0;
+        }
+        
+        .qa-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .qa-question {
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+            color: var(--accent-primary);
+        }
+        
+        .qa-answer {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 0.5rem;
+        }
+        
+        .qa-ideal {
+            margin-bottom: 0.5rem;
+            padding: 0.75rem;
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid #10b981;
+        }
+        
+        .qa-mistakes {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .qa-suggestions {
+            color: #f59e0b;
+            font-size: 0.9rem;
+        }
+        
+        .strengths-weaknesses {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .strengths-box, .weaknesses-box {
+            padding: 1.5rem;
+            border-radius: 1rem;
+        }
+        
+        .strengths-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10b981;
+        }
+        
+        .weaknesses-box {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+        }
+        
+        .strengths-box h4, .weaknesses-box h4 {
+            margin-bottom: 1rem;
+        }
+        
+        .strengths-box ul, .weaknesses-box ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .strengths-box li, .weaknesses-box li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .overall-feedback {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+        
+        .highlight-card {
+            animation: highlightPulse 2s ease;
+        }
+        
+        @keyframes highlightPulse {
+            0% { background: rgba(99, 102, 241, 0.5); }
+            100% { background: rgba(0, 0, 0, 0.3); }
+        }
+        
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .strengths-weaknesses {
+                grid-template-columns: 1fr;
+            }
+            
+            .score-breakdown {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .modal-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="glass-header">
+            <div class="logo">
+                <span class="logo-icon">📊</span>
+                <h1>Dashboard</h1>
+            </div>
+            <nav class="header-nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="interview.html" class="nav-link">New Interview</a>
+            </nav>
+        </header>
+
+        <main class="dashboard-main">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card glass-card">
+                    <span class="stat-icon">📝</span>
+                    <div class="stat-info">
+                        <span class="stat-label">Total Interviews</span>
+                        <span id="totalInterviews" class="stat-value">0</span>
+                    </div>
+                </div>
+                <div class="stat-card glass-card">
+                    <span class="stat-icon">⭐</span>
+                    <div class="stat-info">
+                        <span class="stat-label">Average Score</span>
+                        <span id="avgScore" class="stat-value">0%</span>
+                    </div>
+                </div>
+                <div class="stat-card glass-card">
+                    <span class="stat-icon">🏆</span>
+                    <div class="stat-info">
+                        <span class="stat-label">Best Score</span>
+                        <span id="bestScore" class="stat-value">0%</span>
+                    </div>
+                </div>
+                <div class="stat-card glass-card">
+                    <span class="stat-icon">📈</span>
+                    <div class="stat-info">
+                        <span class="stat-label">Improvement</span>
+                        <span id="improvement" class="stat-value">+0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Progress Over Time</h3>
+                    <canvas id="progressChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Skill Breakdown</h3>
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Interview History -->
+            <div class="history-section">
+                <div class="section-header">
+                    <h3>Interview History</h3>
+                    <div class="filter-bar">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="custom">Custom</button>
+                        <button class="filter-btn" data-filter="practice">Practice</button>
+                        <button class="filter-btn" data-filter="resume">Resume</button>
+                    </div>
+                    <button id="clearHistoryBtn" class="btn-text">Clear All</button>
+                </div>
+                
+                <div id="historyList" class="history-cards">
+                    <!-- History cards will be injected here -->
+                </div>
+                
+                <div id="exportOptions" style="margin-top: 1.5rem; text-align: right;">
+                    <button id="exportDataBtn" class="btn-secondary">Export Data</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Interview Detail Modal -->
+    <div id="interviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Interview Details</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <div id="modalContent">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/storage.js"></script>
+    <script type="module" src="js/dashboard.js"></script>
+    <script type="module" src="js/background3d.js"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

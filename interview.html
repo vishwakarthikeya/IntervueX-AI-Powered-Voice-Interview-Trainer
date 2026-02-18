@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Interview Session - AI Voice Interview Trainer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="css/desktop.css">
+    <style>
+        /* Additional styles for 3-card system */
+        .interview-mode-selector {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        
+        .interview-mode-selector h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+        
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1400px;
+            width: 100%;
+            margin-top: 2rem;
+        }
+        
+        .interview-card {
+            background: rgba(20, 24, 28, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .interview-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .interview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, transparent, currentColor, transparent);
+        }
+        
+        .custom-card {
+            background: linear-gradient(145deg, rgba(30, 58, 138, 0.8), rgba(59, 130, 246, 0.8));
+            color: #93c5fd;
+        }
+        
+        .practice-card {
+            background: linear-gradient(145deg, rgba(6, 95, 70, 0.8), rgba(16, 185, 129, 0.8));
+            color: #a7f3d0;
+        }
+        
+        .resume-card {
+            background: linear-gradient(145deg, rgba(153, 27, 27, 0.8), rgba(239, 68, 68, 0.8));
+            color: #fecaca;
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .interview-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            color: white;
+        }
+        
+        .interview-card p {
+            text-align: center;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .interview-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: white;
+        }
+        
+        .required {
+            color: #f87171;
+            margin-left: 4px;
+        }
+        
+        .optional {
+            color: #9ca3af;
+            font-size: 0.8rem;
+            margin-left: 4px;
+            font-weight: normal;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: currentColor;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .duration-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .duration-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .duration-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: white;
+            box-shadow: 0 0 20px currentColor;
+        }
+        
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .file-upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload-area:hover {
+            border-color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-preview {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            margin-top: 0.5rem;
+        }
+        
+        .remove-file {
+            background: none;
+            border: none;
+            color: #f87171;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0 0.5rem;
+        }
+        
+        .continue-btn {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            color: black;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .continue-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .continue-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Interview Session Styles */
+        #interview-session {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .interview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .interview-info h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .interview-info p {
+            color: var(--text-secondary);
+        }
+        
+        .timer-display {
+            text-align: right;
+        }
+        
+        #time-remaining {
+            font-size: 2rem;
+            font-weight: bold;
+            font-family: monospace;
+            transition: color 0.3s;
+        }
+        
+        .interview-session .progress-bar {
+            width: 200px;
+            height: 6px;
+            margin-top: 0.5rem;
+        }
+        
+        .ai-avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        #avatar-3d {
+            width: 120px;
+            height: 120px;
+            border-radius: 60px;
+            background: radial-gradient(circle at 30% 30%, #6366f1, #1e1e3f);
+            box-shadow: 0 0 30px #6366f1;
+            animation: avatarPulse 3s infinite;
+        }
+        
+        .ai-status {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
+            background: #10b981;
+            animation: statusPulse 1.5s infinite;
+        }
+        
+        .question-container {
+            margin-bottom: 2rem;
+        }
+        
+        .question-number {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .question-text {
+            font-size: 1.5rem;
+            line-height: 1.5;
+            min-height: 4rem;
+        }
+        
+        .answer-container {
+            margin-bottom: 2rem;
+        }
+        
+        #answer-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: white;
+            font-size: 1rem;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+        
+        .answer-controls {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn-secondary, .btn-primary {
+            padding: 0.875rem 2rem;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border: none;
+            flex: 2;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex: 1;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .conversation-history {
+            margin-top: 1rem;
+        }
+        
+        .toggle-history {
+            background: none;
+            border: none;
+            color: var(--accent-primary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.5rem;
+        }
+        
+        .history-list {
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        
+        .history-question {
+            color: var(--accent-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .history-answer {
+            color: var(--text-secondary);
+        }
+        
+        @keyframes avatarPulse {
+            0% { box-shadow: 0 0 30px #6366f1; }
+            50% { box-shadow: 0 0 50px #8b5cf6; }
+            100% { box-shadow: 0 0 30px #6366f1; }
+        }
+        
+        @keyframes statusPulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        @media (max-width: 1024px) {
+            .card-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .interview-mode-selector h1 {
+                font-size: 1.8rem;
+            }
+            
+            .answer-controls {
+                flex-direction: column;
+            }
+        }
+        
+        .typing-animation {
+            overflow: hidden;
+            border-right: 2px solid var(--accent-primary);
+            white-space: nowrap;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--accent-primary) }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cosmic background will be injected here by background3d.js -->
+    
+    <div class="app-container">
+        <header class="glass-header">
+            <div class="logo">
+                <span class="logo-icon">🎯</span>
+                <h1>Interview Trainer</h1>
+            </div>
+            <nav class="header-nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+            </nav>
+        </header>
+
+        <!-- Mode Selection Phase -->
+        <div class="interview-mode-selector">
+            <h1>Choose Your Interview Mode</h1>
+            
+            <div class="card-container">
+                <!-- Card 1: Custom Interview (Blue Theme) -->
+                <div class="interview-card custom-card">
+                    <div class="card-icon">💼</div>
+                    <h2>Custom Interview</h2>
+                    <p>Fully customizable interview tailored to your needs</p>
+                    
+                    <form class="interview-form" id="custom-form">
+                        <div class="form-group">
+                            <label>Job Title <span class="required">*</span></label>
+                            <input type="text" id="job-title" placeholder="e.g., Senior Frontend Developer" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Job Description <span class="optional">(Optional)</span></label>
+                            <textarea id="job-description" rows="3" 
+                                placeholder="Paste job description here for more targeted questions..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Difficulty Level</label>
+                            <select id="difficulty">
+                                <option value="easy">Easy - Basic Concepts</option>
+                                <option value="medium" selected>Medium - Practical Application</option>
+                                <option value="hard">Hard - System Design</option>
+                                <option value="critical">Critical - Expert Level</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Interview Duration</label>
+                            <div class="duration-selector">
+                                <button type="button" class="duration-btn" data-duration="2">2 min</button>
+                                <button type="button" class="duration-btn active" data-duration="5">5 min</button>
+                                <button type="button" class="duration-btn" data-duration="10">10 min</button>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="continue-btn">Continue Interview →</button>
+                    </form>
+                </div>
+                
+                <!-- Card 2: Practice Interview (Green Theme) -->
+                <div class="interview-card practice-card">
+                    <div class="card-icon">🎯</div>
+                    <h2>Practice Interview</h2>
+                    <p>Quick practice session to sharpen your skills</p>
+                    
+                    <form class="interview-form" id="practice-form">
+                        <div class="form-group">
+                            <label>Role</label>
+                            <input type="text" id="practice-role" placeholder="e.g., Software Engineer" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Experience Level</label>
+                            <select id="experience-level">
+                                <option value="entry">Entry Level (0-2 years)</option>
+                                <option value="mid" selected>Mid Level (3-5 years)</option>
+                                <option value="senior">Senior Level (6+ years)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Difficulty</label>
+                            <input type="range" id="practice-difficulty" min="1" max="4" value="2">
+                            <div class="range-labels">
+                                <span>Easy</span>
+                                <span>Medium</span>
+                                <span>Hard</span>
+                                <span>Critical</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Duration</label>
+                            <select id="practice-duration">
+                                <option value="2">2 minutes</option>
+                                <option value="5" selected>5 minutes</option>
+                                <option value="10">10 minutes</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="continue-btn">Start Practice →</button>
+                    </form>
+                </div>
+                
+                <!-- Card 3: Resume-Based Interview (Red Theme) -->
+                <div class="interview-card resume-card">
+                    <div class="card-icon">📄</div>
+                    <h2>Resume-Based Interview</h2>
+                    <p>AI analyzes your resume to generate personalized questions</p>
+                    
+                    <form class="interview-form" id="resume-form">
+                        <div class="form-group">
+                            <label>Upload Resume</label>
+                            <div class="file-upload-area" id="resume-drop-zone">
+                                <input type="file" id="resume-file" accept=".pdf,.docx" hidden>
+                                <div class="upload-placeholder">
+                                    <span class="upload-icon">☁️</span>
+                                    <p>Drag & drop or click to upload</p>
+                                    <small>Supports PDF and DOCX</small>
+                                </div>
+                                <div class="file-preview" style="display: none;">
+                                    <span class="file-name"></span>
+                                    <button type="button" class="remove-file">×</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Focus Area <span class="optional">(Optional)</span></label>
+                            <input type="text" id="focus-area" 
+                                placeholder="e.g., Machine Learning, Backend Systems">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Interview Duration</label>
+                            <div class="duration-selector">
+                                <button type="button" class="duration-btn" data-duration="5">5 min</button>
+                                <button type="button" class="duration-btn active" data-duration="10">10 min</button>
+                                <button type="button" class="duration-btn" data-duration="15">15 min</button>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="continue-btn" disabled>Analyze Resume & Start →</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interview Session Phase (Hidden Initially) -->
+        <div id="interview-session" style="display: none;">
+            <div class="interview-header">
+                <div class="interview-info">
+                    <h2 id="interview-type">Custom Interview</h2>
+                    <p id="interview-role">Senior Frontend Developer</p>
+                </div>
+                <div class="timer-display">
+                    <span id="time-remaining">05:00</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Simple 3D Avatar Placeholder (Canvas will be initialized by Three.js) -->
+            <div class="ai-avatar-container">
+                <canvas id="avatar-3d"></canvas>
+                <div class="ai-status">
+                    <span class="status-indicator"></span>
+                    <span id="ai-state">Ready to start...</span>
+                </div>
+            </div>
+            
+            <!-- Question Display -->
+            <div class="question-container">
+                <div class="question-number">Question #<span id="q-number">1</span></div>
+                <div class="question-text" id="current-question"></div>
+            </div>
+            
+            <!-- Answer Input -->
+            <div class="answer-container">
+                <textarea id="answer-input" placeholder="Type your answer here..." rows="4" disabled></textarea>
+                <div class="answer-controls">
+                    <button id="voice-answer-btn" class="btn-secondary" disabled>
+                        <span class="mic-icon">🎤</span> Voice Answer
+                    </button>
+                    <button id="submit-answer-btn" class="btn-primary" disabled>Submit Answer →</button>
+                </div>
+            </div>
+            
+            <!-- Conversation History (Collapsible) -->
+            <div class="conversation-history">
+                <button class="toggle-history">View Previous Questions</button>
+                <div class="history-list" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- Original evaluation phase elements (kept for compatibility) -->
+        <div id="evaluationPhase" class="phase" style="display: none;"></div>
+    </div>
+
+    <script type="module" src="js/aiService.js"></script>
+    <script type="module" src="js/voice.js"></script>
+    <script type="module" src="js/storage.js"></script>
+    <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/interviewEngine.js"></script>
+    <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/background3d.js"></script>
+</body>
+</html>
